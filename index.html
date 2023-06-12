@@ -47,72 +47,22 @@
         // Create tooltip element
         var tooltip = document.getElementById('tooltip');
 
-        function loadKML() {
+        async function loadKML() { // Add async keyword here
 		
-			var fileID = "14BnOoG7Z_Md5KhWslE0C3ZMWSxCkHGRp"; // Replace with your file ID.
-			var url = "https://script.google.com/a/macros/gopuff.com/s/AKfycby6EyTiJC6aR17u4-zjt5Oqw2rI4RHQgNtCxDlvge7GNlXdq4vIeDPus7hVIJyGqokF/exec?id=" + fileID; // Replace with your web app URL.
+            var fileID = "14BnOoG7Z_Md5KhWslE0C3ZMWSxCkHGRp"; // Replace with your file ID.
+            var url = "https://script.google.com/a/macros/gopuff.com/s/AKfycby6EyTiJC6aR17u4-zjt5Oqw2rI4RHQgNtCxDlvge7GNlXdq4vIeDPus7hVIJyGqokF/exec?id=" + fileID; // Replace with your web app URL.
 
-			// Fetch KML data from Google Drive via Google Apps Script
-			var response = await fetch(url);
+            // Fetch KML data from Google Drive via Google Apps Script
+            var response = await fetch(url);
 			
-			if (!response.ok) {
-				alert("HTTP error " + response.status);
-				return;
-			}
+            if (!response.ok) {
+                alert("HTTP error " + response.status);
+                return;
+            }
 			
-			var kmlString = await response.text();
-			
-		
-            var kmlString = document.getElementById('kml_input').value;
+            var kmlString = await response.text();
 
-            var kmlFormat = new ol.format.KML();
-
-            var features = kmlFormat.readFeatures(kmlString, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
-			console.log(features)
-            var vectorSource = new ol.source.Vector({
-                features: features
-            });
-
-            var vectorLayer = new ol.layer.Vector({
-                source: vectorSource
-            });
-			
-            vectorLayer.set('id', 'hexLayer');
-			vectorLayer.setZIndex(1);
-
-            map.addLayer(vectorLayer);
-
-            var extent = vectorSource.getExtent();
-            map.getView().fit(extent, map.getSize());
-
-            // Add mousemove event listener to display tooltip
-            map.on('pointermove', function (event) {
-                var hexFeatures = map.getFeaturesAtPixel(event.pixel, {
-                    layerFilter: function (layer) {
-                        return layer.get('id') === 'hexLayer';
-                    }
-                });
-
-                if (hexFeatures.length > 0 && hexFeatures[0].get('class') === 'hex-placemark') {
-                    var description = hexFeatures[0].get('description');
-                    
-                    // Update tooltip content and display it
-                    tooltip.textContent = description;
-                    tooltip.style.opacity = 1;
-                    
-                    // Update tooltip position
-                    var coordinate = event.coordinate;
-                    var pixel = map.getPixelFromCoordinate(coordinate);
-                    tooltip.style.left = pixel[0] + 10 + 'px';
-                    tooltip.style.top = pixel[1] - 25 + 'px';
-                } else {
-                    // Hide tooltip
-                    tooltip.style.opacity = 0;
-                }
-            });
+            // rest of the function...
         }
     </script>
 </body>
