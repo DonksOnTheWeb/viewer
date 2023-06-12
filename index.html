@@ -8,13 +8,11 @@
             height: 100%;
             margin: 0;
             padding: 0;
-        }	
+        }
         .map {
             height: 80%;
             width: 100%;
         }
-
-        /* Add style for tooltip div */
         .tooltip {
             position: absolute;
             background-color: #f9f9f9;
@@ -31,14 +29,29 @@
 <body>
     <h2>David's Hex Map Viewer V1.</h2>
     <div id="map" class="map"></div>
-    <div id="tooltip" class="tooltip"></div> <!-- Add tooltip div -->
-
+    <div id="tooltip" class="tooltip"></div>
+    <button id="toggle">Toggle Hex-Placemarks</button>
+    
     <script type="text/javascript">
+        var visibleLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            visible: true,
+            id: 'visibleLayer'
+        });
+
+        var hiddenLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            visible: false,
+            id: 'hiddenLayer'
+        });
+
         var map = new ol.Map({
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
-                })
+                }),
+                visibleLayer,
+                hiddenLayer
             ],
             target: 'map',
             view: new ol.View({
@@ -47,88 +60,71 @@
             })
         });
 
-        // Create tooltip element
         var tooltip = document.getElementById('tooltip');
 
-        async function loadKML() { // Add async keyword here
-			
+        async function loadKML() {
             var url = "https://script.google.com/macros/s/AKfycbwPaxTcH8mQ-Whj9gA5QG5n54J9FXeXRmcRyJBg9jeS6nT3Hu24YM69H3oVrhiaDIOX/exec"
-
-
-            // Fetch KML data from Google Drive via Google Apps Script
             var response = await fetch(url);
-			
             if (!response.ok) {
                 alert("HTTP error " + response.status);
                 return;
             }
-			var kmlString = await response.text();
-			
+            var kmlString = await response.text();
             var kmlFormat = new ol.format.KML();
-
             var features = kmlFormat.readFeatures(kmlString, {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:3857'
             });
-			console.log(features)
-            var vectorSource = new ol.source.Vector({
-                features: features
-            });
 
-            var vectorLayer = new ol.layer.Vector({
-                source: vectorSource
-            });
-			
-            vectorLayer.set('id', 'hexLayer');
-			vectorLayer.setZIndex(1);
+            visibleLayer.getSource().addFeatures(features);
 
-            map.addLayer(vectorLayer);
-
-            var extent = vectorSource.getExtent();
+            var extent = visibleLayer.getSource().getExtent();
             map.getView().fit(extent, map.getSize());
 
-            // Add mousemove event listener to display tooltip
             map.on('pointermove', function (event) {
                 var hexFeatures = map.getFeaturesAtPixel(event.pixel, {
                     layerFilter: function (layer) {
-                        return layer.get('id') === 'hexLayer';
+                        return layer.get('id') === 'visibleLayer' || layer.get('id') === 'hiddenLayer';
                     }
                 });
 
-                if (hexFeatures.length > 0 && hexFeatures[0].get('class') === 'hex-placemark') {
+                if (hexFeatures.length > 0) {
                     var description = hexFeatures[0].get('description');
-                    
-                    // Update tooltip content and display it
                     tooltip.textContent = description;
                     tooltip.style.opacity = 1;
                     
-                    // Update tooltip position
                     var coordinate = event.coordinate;
                     var pixel = map.getPixelFromCoordinate(coordinate);
                     tooltip.style.left = pixel[0] + 10 + 'px';
                     tooltip.style.top = pixel[1] - 25 + 'px';
                 } else {
-				    if (hexFeatures.length > 0 && hexFeatures[0].get('class') === 'MFC-placemark') {
-						var description = hexFeatures[0].get('description');
-						
-						// Update tooltip content and display it
-						tooltip.textContent = description;
-						tooltip.style.opacity = 1;
-						
-						// Update tooltip position
-						var coordinate = event.coordinate;
-						var pixel = map.getPixelFromCoordinate(coordinate);
-						tooltip.style.left = pixel[0] + 10 + 'px';
-						tooltip.style.top = pixel[1] - 25 + 'px';
-					} else {
-						// Hide tooltip
-						tooltip.style.opacity = 0;
-					}
+                    tooltip.style.opacity = 0;
                 }
             });
         }
-		
-		loadKML();
+        
+        loadKML();
+
+        function toggleHexPlacemarks() {
+            var visibleFeatures = visibleLayer.getSource().getFeatures();
+            var hiddenFeatures = hiddenLayer.getSource().getFeatures();
+
+            visibleFeatures.forEach(function(feature) {
+                if (feature.get('class') === 'hex-placemark') {
+                    hiddenLayer.getSource().addFeature(feature);
+                    visibleLayer.getSource().removeFeature(feature);
+                }
+            });
+
+            hiddenFeatures.forEach(function(feature) {
+                if (feature.get('class') === 'hex-placemark') {
+                    visibleLayer.getSource().addFeature(feature);
+                    hiddenLayer.getSource().removeFeature(feature);
+                }
+            });
+        }
+
+        document.getElementById('toggle').addEventListener('click', toggleHexPlacemarks);
     </script>
 </body>
 </html>
