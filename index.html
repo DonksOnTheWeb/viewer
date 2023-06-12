@@ -4,8 +4,13 @@
     <title>KML Viewer</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" type="text/css">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }	
         .map {
-            height: 900px;
+            height: 80%;
             width: 100%;
         }
 
@@ -47,7 +52,6 @@
 
         async function loadKML() { // Add async keyword here
 			
-			console.log('Here')
             var url = "https://script.google.com/macros/s/AKfycbwPaxTcH8mQ-Whj9gA5QG5n54J9FXeXRmcRyJBg9jeS6nT3Hu24YM69H3oVrhiaDIOX/exec"
 
 
@@ -59,9 +63,6 @@
                 return;
             }
 			var kmlString = await response.text();
-			
-			console.log('Got it')
-			console.log(kmlString)
 			
             var kmlFormat = new ol.format.KML();
 
@@ -107,8 +108,22 @@
                     tooltip.style.left = pixel[0] + 10 + 'px';
                     tooltip.style.top = pixel[1] - 25 + 'px';
                 } else {
-                    // Hide tooltip
-                    tooltip.style.opacity = 0;
+				    if (hexFeatures.length > 0 && hexFeatures[0].get('class') === 'MFC-placemark') {
+						var description = hexFeatures[0].get('description');
+						
+						// Update tooltip content and display it
+						tooltip.textContent = description;
+						tooltip.style.opacity = 1;
+						
+						// Update tooltip position
+						var coordinate = event.coordinate;
+						var pixel = map.getPixelFromCoordinate(coordinate);
+						tooltip.style.left = pixel[0] + 10 + 'px';
+						tooltip.style.top = pixel[1] - 25 + 'px';
+					} else {
+						// Hide tooltip
+						tooltip.style.opacity = 0;
+					}
                 }
             });
         }
