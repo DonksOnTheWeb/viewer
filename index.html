@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>KML Viewer</title>
+    <title>1337 KML Viewer</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" type="text/css">
     <style>
         .map {
@@ -24,7 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/ol/dist/ol.js"></script>
 </head>
 <body>
-    <h2>David's Hex Map Viewer.</h2>
+    <h2>David's Hxx Map Viewer.</h2>
     <div id="map" class="map"></div>
     <div id="tooltip" class="tooltip"></div> <!-- Add tooltip div -->
 
@@ -45,25 +45,24 @@
         // Create tooltip element
         var tooltip = document.getElementById('tooltip');
 
-        async function loadKML() {
-		
-			console.log("Here");
-		
-			var fileID = "14BnOoG7Z_Md5KhWslE0C3ZMWSxCkHGRp"; // Replace with your file ID.
-			var url = "https://script.google.com/a/macros/gopuff.com/s/AKfycby6EyTiJC6aR17u4-zjt5Oqw2rI4RHQgNtCxDlvge7GNlXdq4vIeDPus7hVIJyGqokF/exec?id=" + fileID; // Replace with your web app URL.
+        async function loadKML() { // Add async keyword here
+			
+			console.log('Here')
+            var url = "https://script.google.com/macros/s/AKfycbwPaxTcH8mQ-Whj9gA5QG5n54J9FXeXRmcRyJBg9jeS6nT3Hu24YM69H3oVrhiaDIOX/exec"
 
-			// Fetch KML data from Google Drive via Google Apps Script
-			var response = await fetch(url);
+
+            // Fetch KML data from Google Drive via Google Apps Script
+            var response = await fetch(url);
 			
-			if (!response.ok) {
-				alert("HTTP error " + response.status);
-				return;
-			}
-			
+            if (!response.ok) {
+                alert("HTTP error " + response.status);
+                return;
+            }
 			var kmlString = await response.text();
-		
+			
+			console.log('Got it')
 			console.log(kmlString)
-		
+			
             var kmlFormat = new ol.format.KML();
 
             var features = kmlFormat.readFeatures(kmlString, {
