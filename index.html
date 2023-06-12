@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KML Viewer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" type="text/css">
+    <style>
+        .map {
+            height: 900px;
+            width: 100%;
+        }
+
+        /* Add style for tooltip div */
+        .tooltip {
+            position: absolute;
+            background-color: #f9f9f9;
+            border: 1px solid #c0c0c0;
+            border-radius: 5px;
+            padding: 10px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/ol/dist/ol.js"></script>
+</head>
+<body>
+    <h2>David's 1337 Map.</h2>
+    <div id="map" class="map"></div>
+    <textarea id="kml_input" placeholder="Paste your KML string here"></textarea>
+    <button onclick="loadKML()">Load KML</button>
+    <div id="tooltip" class="tooltip"></div> <!-- Add tooltip div -->
+
+    <script type="text/javascript">
+        var map = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            target: 'map',
+            view: new ol.View({
+                center: [0, 0],
+                zoom: 2
+            })
+        });
+
+        // Create tooltip element
+        var tooltip = document.getElementById('tooltip');
+
+        function loadKML() {
+            var kmlString = document.getElementById('kml_input').value;
+
+            var kmlFormat = new ol.format.KML();
+
+            var features = kmlFormat.readFeatures(kmlString, {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:3857'
+            });
+			console.log(features)
+            var vectorSource = new ol.source.Vector({
+                features: features
+            });
+
+            var vectorLayer = new ol.layer.Vector({
+                source: vectorSource
+            });
+			
+            vectorLayer.set('id', 'hexLayer');
+			vectorLayer.setZIndex(1);
+
+            map.addLayer(vectorLayer);
+
+            var extent = vectorSource.getExtent();
+            map.getView().fit(extent, map.getSize());
+
+            // Add mousemove event listener to display tooltip
+            map.on('pointermove', function (event) {
+                var hexFeatures = map.getFeaturesAtPixel(event.pixel, {
+                    layerFilter: function (layer) {
+                        return layer.get('id') === 'hexLayer';
+                    }
+                });
+
+                if (hexFeatures.length > 0 && hexFeatures[0].get('class') === 'hex-placemark') {
+                    var description = hexFeatures[0].get('description');
+                    
+                    // Update tooltip content and display it
+                    tooltip.textContent = description;
+                    tooltip.style.opacity = 1;
+                    
+                    // Update tooltip position
+                    var coordinate = event.coordinate;
+                    var pixel = map.getPixelFromCoordinate(coordinate);
+                    tooltip.style.left = pixel[0] + 10 + 'px';
+                    tooltip.style.top = pixel[1] - 25 + 'px';
+                } else {
+                    // Hide tooltip
+                    tooltip.style.opacity = 0;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
