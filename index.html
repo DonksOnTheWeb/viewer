@@ -46,9 +46,11 @@
         var tooltip = document.getElementById('tooltip');
 
         async function loadKML() { // Add async keyword here
+			
+			console.log('Here')
 		
             var fileID = "14BnOoG7Z_Md5KhWslE0C3ZMWSxCkHGRp"; // Replace with your file ID.
-            var url = "https://script.google.com/a/macros/gopuff.com/s/AKfycby6EyTiJC6aR17u4-zjt5Oqw2rI4RHQgNtCxDlvge7GNlXdq4vIeDPus7hVIJyGqokF/exec?id=" + fileID; // Replace with your web app URL.
+            var url = "https://script.google.com/macros/s/AKfycbwPaxTcH8mQ-Whj9gA5QG5n54J9FXeXRmcRyJBg9jeS6nT3Hu24YM69H3oVrhiaDIOX/exec?id=" + fileID; // Replace with your web app URL.
 
             // Fetch KML data from Google Drive via Google Apps Script
             var response = await fetch(url);
