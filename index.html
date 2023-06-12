@@ -59,6 +59,9 @@
             }
 			var kmlString = await response.text();
 			
+			console.log('Got it')
+			console.log(kmlString)
+			
             var kmlFormat = new ol.format.KML();
 
             var features = kmlFormat.readFeatures(kmlString, {
