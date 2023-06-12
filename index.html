@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>1337 KML Viewer</title>
+    <title>KML Viewer</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" type="text/css">
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         .map {
             height: 900px;
@@ -24,9 +25,17 @@
     <script src="https://cdn.jsdelivr.net/npm/ol/dist/ol.js"></script>
 </head>
 <body>
-    <h2>David's Hxx Map Viewer.</h2>
+    <h2>David's 1337 Map.</h2>
     <div id="map" class="map"></div>
+    <textarea id="kml_input" placeholder="Paste your KML string here"></textarea>
+    <button onclick="loadKML()">Load KML</button>
     <div id="tooltip" class="tooltip"></div> <!-- Add tooltip div -->
+
+	<div id="g_id_onload"
+		 data-client_id="278292245850-kj2jibr3r54rqnnfifq2jsag3h1qq7ks.apps.googleusercontent.com"
+		 data-callback="handleCredentialResponse">
+	</div>
+	<div class="g_id_signin" data-type="standard"></div>
 
     <script type="text/javascript">
         var map = new ol.Map({
@@ -45,25 +54,37 @@
         // Create tooltip element
         var tooltip = document.getElementById('tooltip');
 
-        async function loadKML() { // Add async keyword here
-			
-			console.log('Here')
-		
-            var fileID = "14BnOoG7Z_Md5KhWslE0C3ZMWSxCkHGRp"; // Replace with your file ID.
-            var url = "https://script.google.com/macros/s/AKfycbwPaxTcH8mQ-Whj9gA5QG5n54J9FXeXRmcRyJBg9jeS6nT3Hu24YM69H3oVrhiaDIOX/exec?id=" + fileID; // Replace with your web app URL.
+		function handleCredentialResponse(response) {
+		  var payload = response.getPayload();
+		  var email = payload.email;
+		  var domain = email.split('@')[1];
 
-            // Fetch KML data from Google Drive via Google Apps Script
-            var response = await fetch(url);
+		  var allowedDomains = ['yourdomain.com'];  // Replace with your own domain(s)
+		  if (allowedDomains.includes(domain)) {
+			console.log('User is from an allowed domain');
+			// You can add more logic here to handle successful sign-in from allowed domain
+		  } else {
+			console.log('User is not from an allowed domain');
+			// Handle sign-in from disallowed domain (e.g., show an error message)
+		  }
+		}
+
+
+        function loadKML() {
+		
+			var fileID = "14BnOoG7Z_Md5KhWslE0C3ZMWSxCkHGRp"; // Replace with your file ID.
+			var url = "https://script.google.com/a/macros/gopuff.com/s/AKfycby6EyTiJC6aR17u4-zjt5Oqw2rI4RHQgNtCxDlvge7GNlXdq4vIeDPus7hVIJyGqokF/exec?id=" + fileID; // Replace with your web app URL.
+
+			// Fetch KML data from Google Drive via Google Apps Script
+			var response = await fetch(url);
 			
-            if (!response.ok) {
-                alert("HTTP error " + response.status);
-                return;
-            }
+			if (!response.ok) {
+				alert("HTTP error " + response.status);
+				return;
+			}
+			
 			var kmlString = await response.text();
-			
-			console.log('Got it')
-			console.log(kmlString)
-			
+		
             var kmlFormat = new ol.format.KML();
 
             var features = kmlFormat.readFeatures(kmlString, {
@@ -113,8 +134,6 @@
                 }
             });
         }
-		
-		loadKML();
     </script>
 </body>
 </html>
