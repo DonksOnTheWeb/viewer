@@ -3,7 +3,6 @@
 <head>
     <title>KML Viewer</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.9.0/css/ol.css" type="text/css">
-	<script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         .map {
             height: 900px;
@@ -31,12 +30,6 @@
     <button onclick="loadKML()">Load KML</button>
     <div id="tooltip" class="tooltip"></div> <!-- Add tooltip div -->
 
-	<div id="g_id_onload"
-		 data-client_id="278292245850-kj2jibr3r54rqnnfifq2jsag3h1qq7ks.apps.googleusercontent.com"
-		 data-callback="handleCredentialResponse">
-	</div>
-	<div class="g_id_signin" data-type="standard"></div>
-
     <script type="text/javascript">
         var map = new ol.Map({
             layers: [
@@ -53,22 +46,6 @@
 
         // Create tooltip element
         var tooltip = document.getElementById('tooltip');
-
-		function handleCredentialResponse(response) {
-		  var payload = response.getPayload();
-		  var email = payload.email;
-		  var domain = email.split('@')[1];
-
-		  var allowedDomains = ['yourdomain.com'];  // Replace with your own domain(s)
-		  if (allowedDomains.includes(domain)) {
-			console.log('User is from an allowed domain');
-			// You can add more logic here to handle successful sign-in from allowed domain
-		  } else {
-			console.log('User is not from an allowed domain');
-			// Handle sign-in from disallowed domain (e.g., show an error message)
-		  }
-		}
-
 
         function loadKML() {
 		
