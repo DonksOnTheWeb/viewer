@@ -47,6 +47,8 @@
 
         async function loadKML() {
 		
+			console.log("Here");
+		
 			var fileID = "14BnOoG7Z_Md5KhWslE0C3ZMWSxCkHGRp"; // Replace with your file ID.
 			var url = "https://script.google.com/a/macros/gopuff.com/s/AKfycby6EyTiJC6aR17u4-zjt5Oqw2rI4RHQgNtCxDlvge7GNlXdq4vIeDPus7hVIJyGqokF/exec?id=" + fileID; // Replace with your web app URL.
 
@@ -59,6 +61,8 @@
 			}
 			
 			var kmlString = await response.text();
+		
+			console.log(kmlString)
 		
             var kmlFormat = new ol.format.KML();
 
