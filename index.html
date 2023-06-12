@@ -24,10 +24,8 @@
     <script src="https://cdn.jsdelivr.net/npm/ol/dist/ol.js"></script>
 </head>
 <body>
-    <h2>David's 1337 Map.</h2>
+    <h2>David's Hex Map Viewer.</h2>
     <div id="map" class="map"></div>
-    <textarea id="kml_input" placeholder="Paste your KML string here"></textarea>
-    <button onclick="loadKML()">Load KML</button>
     <div id="tooltip" class="tooltip"></div> <!-- Add tooltip div -->
 
     <script type="text/javascript">
@@ -47,7 +45,7 @@
         // Create tooltip element
         var tooltip = document.getElementById('tooltip');
 
-        function loadKML() {
+        async function loadKML() {
 		
 			var fileID = "14BnOoG7Z_Md5KhWslE0C3ZMWSxCkHGRp"; // Replace with your file ID.
 			var url = "https://script.google.com/a/macros/gopuff.com/s/AKfycby6EyTiJC6aR17u4-zjt5Oqw2rI4RHQgNtCxDlvge7GNlXdq4vIeDPus7hVIJyGqokF/exec?id=" + fileID; // Replace with your web app URL.
@@ -111,6 +109,8 @@
                 }
             });
         }
+		
+		loadKML();
     </script>
 </body>
 </html>
